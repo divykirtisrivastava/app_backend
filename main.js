@@ -9,7 +9,8 @@ app.use(cors())
 let db = mysql.createConnection({
     database:'pashuapp',
     host:'localhost',
-    user:'root'
+    user:'root',
+    password:'1234'
 })
 db.connect((err)=>{
     if(err) throw err
