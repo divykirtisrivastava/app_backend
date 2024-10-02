@@ -42,7 +42,7 @@ app.post('/app/save', (req, res)=>{
         }
     })
 })
-app.get('/api/getdata', (req, res)=>{
+app.get('/app/getdata', (req, res)=>{
     db.query('select * from user',(err, result)=>{
         if(err) throw err
         else{
