@@ -18,7 +18,18 @@ db.connect((err)=>{
         console.log("database connected")
     }
 })
+let clientDetailTableQuery  = `CREATE TABLE if not exists user (
+    id INT NOT NULL AUTO_INCREMENT,
+    email VARCHAR(255) NULL,
+    password VARCHAR(255) NULL,
+    PRIMARY KEY (id));`
 
+    db.query(clientDetailTableQuery, (err, result)=>{
+        if(err) throw err
+        else{
+            console.log("clientDetail Table created")
+        }
+    })
 app.post('/save', (req, res)=>{
     let email = req.body.email
     let pasword = req.body.pasword
