@@ -32,9 +32,9 @@ let clientDetailTableQuery  = `CREATE TABLE if not exists user (
     })
 app.post('/app/save', (req, res)=>{
     let email = req.body.email
-    let pasword = req.body.pasword
+    let password = req.body.password
     console.log(email)
-    let value = [[email, pasword]]
+    let value = [[email, password]]
     db.query('insert into user(email, password) values ?', [value], (err, result)=>{
         if(err) throw err
         else{
