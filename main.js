@@ -30,7 +30,7 @@ let clientDetailTableQuery  = `CREATE TABLE if not exists user (
             console.log("clientDetail Table created")
         }
     })
-app.post('/save', (req, res)=>{
+app.post('/app/save', (req, res)=>{
     let email = req.body.email
     let pasword = req.body.pasword
     console.log(email)
@@ -42,7 +42,7 @@ app.post('/save', (req, res)=>{
         }
     })
 })
-app.get('/getdata', (req, res)=>{
+app.get('/api/getdata', (req, res)=>{
     db.query('select * from user',(err, result)=>{
         if(err) throw err
         else{
