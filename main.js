@@ -36,7 +36,7 @@ app.post('/app/saveprofile', (req, res)=>{
     let name = req.body.name
     let uname = email.split('@')[0]
     let value = [[email, name]]
-    db.query('insert into profile(email, password) values ?', [value], (err, result)=>{
+    db.query('insert into profile(email, name) values ?', [value], (err, result)=>{
         if(err) throw err
         else{
             pashu(uname)
