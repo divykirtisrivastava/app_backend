@@ -33,19 +33,19 @@ let clientDetailTableQuery  = `CREATE TABLE if not exists profile (
 
 app.post('/app/saveprofile', (req, res)=>{
     let email = req.body.email
-    let password = req.body.password
-    let name = email.split('@')[0]
-    let value = [[email, password]]
+    let name = req.body.name
+    let uname = email.split('@')[0]
+    let value = [[email, name]]
     db.query('insert into profile(email, password) values ?', [value], (err, result)=>{
         if(err) throw err
         else{
-            pashu(name)
+            pashu(uname)
             res.send("saved")
         }
     })
 })
 app.get('/app/getprofile', (req, res)=>{
-    db.query('select * from user',(err, result)=>{
+    db.query('select * from profile',(err, result)=>{
         if(err) throw err
         else{
             res.json(result)
