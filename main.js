@@ -18,10 +18,10 @@ db.connect((err)=>{
         console.log("database connected")
     }
 })
-let clientDetailTableQuery  = `CREATE TABLE if not exists user (
+let clientDetailTableQuery  = `CREATE TABLE if not exists profile (
     id INT NOT NULL AUTO_INCREMENT,
     email VARCHAR(255) NULL,
-    password VARCHAR(255) NULL,
+    name VARCHAR(255) NULL,
     PRIMARY KEY (id));`
 
     db.query(clientDetailTableQuery, (err, result)=>{
@@ -30,19 +30,21 @@ let clientDetailTableQuery  = `CREATE TABLE if not exists user (
             console.log("clientDetail Table created")
         }
     })
-app.post('/app/save', (req, res)=>{
+
+app.post('/app/saveprofile', (req, res)=>{
     let email = req.body.email
     let password = req.body.password
-    console.log(email)
+    let name = email.split('@')[0]
     let value = [[email, password]]
     db.query('insert into user(email, password) values ?', [value], (err, result)=>{
         if(err) throw err
         else{
+            pashu(name)
             res.send("saved")
         }
     })
 })
-app.get('/app/getdata', (req, res)=>{
+app.get('/app/getprofile', (req, res)=>{
     db.query('select * from user',(err, result)=>{
         if(err) throw err
         else{
@@ -50,6 +52,27 @@ app.get('/app/getdata', (req, res)=>{
         }
     })
 })
+
+async function pashu(name) {
+    let pashuTableQuery  = `CREATE TABLE if not exists ${name} (
+        id INT NOT NULL AUTO_INCREMENT,
+        type VARCHAR(255) NULL,
+        lactation VARCHAR(255) NULL,
+        currentmilk VARCHAR(255) NULL,
+        capacitymilk VARCHAR(255) NULL,
+        price VARCHAR(255) NULL,
+        negotiable VARCHAR(255) NULL,
+        pictureOne TEXT,
+        pictureTwo TEXT,
+        PRIMARY KEY (id));`
+    
+        db.query(pashuTableQuery, (err, result)=>{
+            if(err) throw err
+            else{
+                console.log("clientDetail Table created")
+            }
+        })
+}
 app.listen(3000, ()=>{
     console.log("server is running")
 })
