@@ -52,6 +52,19 @@ app.get('/app/getprofile', (req, res)=>{
         }
     })
 })
+app.get('/app/verifyUser', (req, res)=>{
+    let email = req.body.email
+    db.query('select * from profile where email = ?',[email],(err, result)=>{
+        if(err) throw err
+        else{
+            if(result.length>0){
+                res.json({isMatch:true, result})
+            }else{
+                res.json({isMatch:false})
+            }
+        }
+    })
+})
 
 async function pashu(name) {
     let pashuTableQuery  = `CREATE TABLE if not exists ${name} (
