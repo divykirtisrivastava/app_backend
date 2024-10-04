@@ -52,8 +52,8 @@ app.get('/app/getprofile', (req, res)=>{
         }
     })
 })
-app.get('/app/verifyUser', (req, res)=>{
-    let email = req.body.email
+app.get('/app/verifyUser/:email', (req, res)=>{
+    let email = req.params.email
     db.query('select * from profile where email = ?',[email],(err, result)=>{
         if(err) throw err
         else{
