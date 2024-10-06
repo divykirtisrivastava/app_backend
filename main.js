@@ -122,7 +122,7 @@ app.post('/app/savepashu/:email',uploads.fields([{ name: 'pictureOne', maxCount:
         };
     
         const query = `INSERT INTO ${email} SET ?`;
-        connection.query(query, newProfile, (err, results) => {
+        db.query(query, newProfile, (err, results) => {
           if (err) {
             console.error('Database error:', err);
             return res.status(500).json({ error: err.message });
