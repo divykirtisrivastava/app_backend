@@ -214,7 +214,19 @@ app.get('/app/allpashu',(req, res)=>{
           res.json(results);
         });
 })
+app.delete('/app/allpashu/:id',(req, res)=>{
 
+    let id = req.params.id
+
+    
+        const query = `delete from allpashu where id = ?`;
+        db.query(query, [id], (err, results) => {
+          if (err) {
+            console.log(err)
+          }
+          res.send("deleted");
+        });
+})
 app.listen(3000, ()=>{
     console.log("server is running")
 })
