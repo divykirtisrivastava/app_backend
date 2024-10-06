@@ -107,7 +107,8 @@ app.post('/app/savepashu/:email', uploads.fields([{ name: 'pictureOne', maxCount
         lactation, currentmilk, capacitymilk, price, negotiable, type
     } = req.body;
 
-    // Debugging: Log the uploaded files
+    // Debugging: Log the body and uploaded files
+    console.log('Request Body:', req.body);
     console.log('Uploaded files:', req.files);
 
     try {
@@ -143,6 +144,7 @@ app.post('/app/savepashu/:email', uploads.fields([{ name: 'pictureOne', maxCount
         return res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 app.delete('/app/deletepashu/:email/:id',(req, res)=>{
     let email = req.params.email
