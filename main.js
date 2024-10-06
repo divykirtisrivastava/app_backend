@@ -135,6 +135,20 @@ app.post('/app/savepashu/:email',uploads.fields([{ name: 'pictureOne', maxCount:
         return res.status(500).json({ error: 'Internal server error' });
       }
 })
+app.delete('/app/deletepashu/:email/:id',(req, res)=>{
+    let email = req.params.email
+    let name = email.split('@')[0]
+    let id = req.params.id
+
+    
+        const query = `delete from ${name} where id = ?`;
+        db.query(query, [id], (err, results) => {
+          if (err) {
+            console.log(err)
+          }
+          res.send("deleted");
+        });
+})
 
 app.listen(3000, ()=>{
     console.log("server is running")
