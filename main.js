@@ -101,6 +101,7 @@ let uploads = multer({storage: storage})
 
 app.post('/app/savepashu/:email',uploads.fields([{ name: 'pictureOne', maxCount: 1 }, { name: 'pictureTwo', maxCount: 1 }]),(req, res)=>{
     let email = req.params.email
+    let name = email.split('@')[0]
     const {
         lactation,currentmilk,capacitymilk,price,negotiable,type
       } = req.body;
@@ -121,7 +122,7 @@ app.post('/app/savepashu/:email',uploads.fields([{ name: 'pictureOne', maxCount:
           pictureTwo: pictureTwo
         };
     
-        const query = `INSERT INTO ${email} SET ?`;
+        const query = `INSERT INTO ${name} SET ?`;
         db.query(query, newProfile, (err, results) => {
           if (err) {
             console.error('Database error:', err);
