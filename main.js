@@ -126,21 +126,15 @@ app.post('/app/savepashu/:email', uploads.fields([{ name: 'pictureOne', maxCount
     let name = email.split('@')[0];
 
     const {
-        lactation, currentmilk, capacitymilk, price, negotiable, type, username,useremail,userphone,userwhatsapp,
+        lactation, currentmilk, capacitymilk, price, negotiable, type, username, useremail, userphone, userwhatsapp,
     } = req.body;
 
-    // Debugging: Log the body and uploaded files
     console.log('Request Body:', req.body);
     console.log('Uploaded files:', req.files);
 
     try {
-        // Check if the required images are uploaded
         let pictureOne = req.files['pictureOne'] ? req.files['pictureOne'][0].filename : null;
         let pictureTwo = req.files['pictureTwo'] ? req.files['pictureTwo'][0].filename : null;
-
-        // Debugging: Log the filenames
-        console.log('Picture One:', pictureOne);
-        console.log('Picture Two:', pictureTwo);
 
         const newProfile = {
             lactation: lactation,
@@ -154,13 +148,6 @@ app.post('/app/savepashu/:email', uploads.fields([{ name: 'pictureOne', maxCount
         };
 
         const query = `INSERT INTO ${name} SET ?`;
-        db.query(query, newProfile, (err, results) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ error: err.message });
-            }
-            res.status(201).json({ id: results.insertId, ...newProfile });
-        });
         const allpashu = {
             lactation: lactation,
             currentmilk: currentmilk,
@@ -170,25 +157,46 @@ app.post('/app/savepashu/:email', uploads.fields([{ name: 'pictureOne', maxCount
             type: type,
             pictureOne: pictureOne,
             pictureTwo: pictureTwo,
-            useremail:username,
-            useremail:useremail,
-            userphone:userphone,
-            userwhatsapp:userwhatsapp
+            username: username,
+            useremail: useremail,
+            userphone: userphone,
+            userwhatsapp: userwhatsapp
         };
 
-        const allquery = `INSERT INTO allpashu SET ?`;
-        db.query(allquery, allpashu, (err, results) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ error: err.message });
-            }
-            res.status(201).json({ id: results.insertId, ...allpashu });
+        // Use Promise.all to handle both queries
+        Promise.all([
+            new Promise((resolve, reject) => {
+                db.query(query, newProfile, (err, results) => {
+                    if (err) {
+                        console.error('Database error for dynamic table:', err);
+                        return reject(err);
+                    }
+                    resolve({ id: results.insertId, ...newProfile });
+                });
+            }),
+            new Promise((resolve, reject) => {
+                const allquery = `INSERT INTO allpashu SET ?`;
+                db.query(allquery, allpashu, (err, results) => {
+                    if (err) {
+                        console.error('Database error for allpashu:', err);
+                        return reject(err);
+                    }
+                    resolve({ id: results.insertId, ...allpashu });
+                });
+            })
+        ]).then(([dynamicResult, allpashuResult]) => {
+            // Send a combined response
+            res.status(201).json({ dynamicResult, allpashuResult });
+        }).catch(error => {
+            console.error('Error during database operations:', error);
+            res.status(500).json({ error: 'Internal server error' });
         });
     } catch (error) {
         console.error('Error handling request:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 
 app.delete('/app/deletepashu/:email/:id',(req, res)=>{
