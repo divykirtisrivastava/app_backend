@@ -99,7 +99,7 @@ let storage = multer.diskStorage({
 })
 let uploads = multer({storage: storage})
 
-app.post('/savepashu/:email',uploads.fields([{ name: 'pictureOne', maxCount: 1 }, { name: 'pictureTwo', maxCount: 1 }]),(req, res)=>{
+app.post('/app/savepashu/:email',uploads.fields([{ name: 'pictureOne', maxCount: 1 }, { name: 'pictureTwo', maxCount: 1 }]),(req, res)=>{
     let email = req.params.email
     const {
         lactation,currentmilk,capacitymilk,price,negotiable,type
