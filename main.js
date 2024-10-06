@@ -32,6 +32,28 @@ let clientDetailTableQuery  = `CREATE TABLE if not exists profile (
             console.log("clientDetail Table created")
         }
     })
+    let allpashuTableQuery  = `CREATE TABLE if not exists allpashu (
+        id INT NOT NULL AUTO_INCREMENT,
+        type VARCHAR(255) NULL,
+        lactation VARCHAR(255) NULL,
+        currentmilk VARCHAR(255) NULL,
+        capacitymilk VARCHAR(255) NULL,
+        price VARCHAR(255) NULL,
+        negotiable VARCHAR(255) NULL,
+        pictureOne TEXT,
+        pictureTwo TEXT,
+        username VARCHAR(255) NULL,
+        useremail VARCHAR(255) NULL,
+        userphone VARCHAR(255) NULL,
+        userwhatsapp VARCHAR(255) NULL,
+        PRIMARY KEY (id));`
+    
+        db.query(allpashuTableQuery, (err, result)=>{
+            if(err) throw err
+            else{
+                console.log("allpashuTableQuery Table created")
+            }
+        })
 
 app.post('/app/saveprofile', (req, res)=>{
     let email = req.body.email
@@ -104,7 +126,7 @@ app.post('/app/savepashu/:email', uploads.fields([{ name: 'pictureOne', maxCount
     let name = email.split('@')[0];
 
     const {
-        lactation, currentmilk, capacitymilk, price, negotiable, type
+        lactation, currentmilk, capacitymilk, price, negotiable, type, username,useremail,userphone,userwhatsapp,
     } = req.body;
 
     // Debugging: Log the body and uploaded files
@@ -139,6 +161,29 @@ app.post('/app/savepashu/:email', uploads.fields([{ name: 'pictureOne', maxCount
             }
             res.status(201).json({ id: results.insertId, ...newProfile });
         });
+        const allpashu = {
+            lactation: lactation,
+            currentmilk: currentmilk,
+            capacitymilk: capacitymilk,
+            price: price,
+            negotiable: negotiable,
+            type: type,
+            pictureOne: pictureOne,
+            pictureTwo: pictureTwo,
+            useremail:username,
+            useremail:useremail,
+            userphone:userphone,
+            userwhatsapp:userwhatsapp
+        };
+
+        const allquery = `INSERT INTO allpashu SET ?`;
+        db.query(allquery, allpashu, (err, results) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(201).json({ id: results.insertId, ...allpashu });
+        });
     } catch (error) {
         console.error('Error handling request:', error);
         return res.status(500).json({ error: 'Internal server error' });
@@ -160,7 +205,19 @@ app.delete('/app/deletepashu/:email/:id',(req, res)=>{
           res.send("deleted");
         });
 })
+app.get('/app/allpashu',(req, res)=>{
+        const query = `select * from allpashu`;
+        db.query(query, (err, results) => {
+          if (err) {
+            console.log(err)
+          }
+          res.json(results);
+        });
+})
 
 app.listen(3000, ()=>{
     console.log("server is running")
 })
+
+// pictureTwo-1728201166342-32e25668-db13-41c3-9c64-68efd98cdb32.jpg
+// pictureOne-1728201166340-57ba8130-1595-4bf7-aeee-ac6358fc3bb5.jpg
