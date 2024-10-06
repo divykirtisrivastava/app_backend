@@ -1,11 +1,13 @@
 const express = require('express')
 const mysql = require('mysql')
 const cors = require('cors')
-
+const multer =  require('multer')
+const path =  require('path')
+const { v4: uuidv4 } = require('uuid');
 let app = express()
 app.use(express.json())
 app.use(cors())
-
+app.use('/pashu_uploads', express.static(path.join(__dirname, 'pashu_uploads')));
 let db = mysql.createConnection({
     database:'pashuapp',
     host:'localhost',
@@ -86,6 +88,53 @@ async function pashu(name) {
             }
         })
 }
+
+
+let storage = multer.diskStorage({
+    destination: './pashu_uploads',
+    filename: function(req, file, cb){
+        const uniqueSuffix = `${Date.now()}-${uuidv4()}${path.extname(file.originalname)}`;
+        cb(null, file.fieldname + "-" + uniqueSuffix)
+    }
+})
+let uploads = multer({storage: storage})
+
+app.post('/savepashu/:email',uploads.fields([{ name: 'pictureOne', maxCount: 1 }, { name: 'pictureTwo', maxCount: 1 }]),(req, res)=>{
+    let email = req.params.email
+    const {
+        lactation,currentmilk,capacitymilk,price,negotiable,type
+      } = req.body;
+    
+      try {
+        // Check if the required images are uploaded
+        let pictureOne = req.files['pictureOne'] ? req.files['pictureOne'][0].filename : null;
+        let pictureTwo = req.files['pictureTwo'] ? req.files['pictureTwo'][0].filename : null;
+    
+        const newProfile = {
+          lactation: lactation,
+          currentmilk: currentmilk,
+          capacitymilk: capacitymilk,
+          price: price,
+          negotiable: negotiable,
+          type: type,
+          pictureOne: pictureOne,
+          pictureTwo: pictureTwo
+        };
+    
+        const query = `INSERT INTO ${email} SET ?`;
+        connection.query(query, newProfile, (err, results) => {
+          if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: err.message });
+          }
+          res.status(201).json({ id: results.insertId, ...newProfile });
+        });
+      } catch (error) {
+        console.error('Error handling request:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+})
+
 app.listen(3000, ()=>{
     console.log("server is running")
 })
