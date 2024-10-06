@@ -97,44 +97,53 @@ let storage = multer.diskStorage({
         cb(null, file.fieldname + "-" + uniqueSuffix)
     }
 })
-let uploads = multer({storage: storage})
+let uploads = multer({ storage: storage });
 
-app.post('/app/savepashu/:email',uploads.fields([{ name: 'pictureOne', maxCount: 1 }, { name: 'pictureTwo', maxCount: 1 }]),(req, res)=>{
-    let email = req.params.email
-    let name = email.split('@')[0]
+app.post('/app/savepashu/:email', uploads.fields([{ name: 'pictureOne', maxCount: 1 }, { name: 'pictureTwo', maxCount: 1 }]), (req, res) => {
+    let email = req.params.email;
+    let name = email.split('@')[0];
+
     const {
-        lactation,currentmilk,capacitymilk,price,negotiable,type
-      } = req.body;
-    
-      try {
+        lactation, currentmilk, capacitymilk, price, negotiable, type
+    } = req.body;
+
+    // Debugging: Log the uploaded files
+    console.log('Uploaded files:', req.files);
+
+    try {
         // Check if the required images are uploaded
         let pictureOne = req.files['pictureOne'] ? req.files['pictureOne'][0].filename : null;
         let pictureTwo = req.files['pictureTwo'] ? req.files['pictureTwo'][0].filename : null;
-    
+
+        // Debugging: Log the filenames
+        console.log('Picture One:', pictureOne);
+        console.log('Picture Two:', pictureTwo);
+
         const newProfile = {
-          lactation: lactation,
-          currentmilk: currentmilk,
-          capacitymilk: capacitymilk,
-          price: price,
-          negotiable: negotiable,
-          type: type,
-          pictureOne: pictureOne,
-          pictureTwo: pictureTwo
+            lactation: lactation,
+            currentmilk: currentmilk,
+            capacitymilk: capacitymilk,
+            price: price,
+            negotiable: negotiable,
+            type: type,
+            pictureOne: pictureOne,
+            pictureTwo: pictureTwo
         };
-    
+
         const query = `INSERT INTO ${name} SET ?`;
         db.query(query, newProfile, (err, results) => {
-          if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: err.message });
-          }
-          res.status(201).json({ id: results.insertId, ...newProfile });
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(201).json({ id: results.insertId, ...newProfile });
         });
-      } catch (error) {
+    } catch (error) {
         console.error('Error handling request:', error);
         return res.status(500).json({ error: 'Internal server error' });
-      }
-})
+    }
+});
+
 app.delete('/app/deletepashu/:email/:id',(req, res)=>{
     let email = req.params.email
     let name = email.split('@')[0]
